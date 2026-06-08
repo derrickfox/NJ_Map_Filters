@@ -43,9 +43,13 @@ const BASEMAPS = {
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
   }
 };
-const HIGH_RELIEF_LAYER = {
+const HIGH_RELIEF_BASE_LAYER = {
   attribution: 'Relief tiles &copy; Esri, USGS, NOAA',
-  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}'
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}'
+};
+const HIGH_RELIEF_TEXTURE_LAYER = {
+  attribution: 'Relief tiles &copy; Mapzen terrain tiles contributors',
+  url: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
 };
 const COUNTY_COLORS = [
   '#2563eb',
@@ -669,11 +673,11 @@ export default function MapArea({
     const color = colorByCounty.get(countyName) || '#2563eb';
 
     return {
-      color: isSelected ? '#0f172a' : color,
-      weight: isSelected ? 4 : 2,
-      opacity: 0.95,
+      color: activeLayers.highRelief ? '#334155' : isSelected ? '#0f172a' : color,
+      weight: activeLayers.highRelief ? (isSelected ? 3 : 1.25) : isSelected ? 4 : 2,
+      opacity: activeLayers.highRelief ? 0.52 : 0.95,
       fillColor: color,
-      fillOpacity: isSelected ? 0.36 : 0.2
+      fillOpacity: activeLayers.highRelief ? 0 : isSelected ? 0.36 : 0.2
     };
   };
 
@@ -722,23 +726,32 @@ export default function MapArea({
         <TileLayer
           key={baseMap}
           attribution={selectedBaseMap.attribution}
-          opacity={activeLayers.highRelief ? 0.16 : 1}
+          opacity={activeLayers.highRelief ? 0 : 1}
           url={selectedBaseMap.url}
         />
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T15:22:17-04:00
-            Purpose: Renders a dominant high-contrast shaded relief basemap beneath NJ data layers.
-            Reason: The earlier hillshade-only overlay was too subtle over the existing basemaps, so High Relief now visibly takes over the terrain read when enabled. */}
+            Timestamp: 2026-06-08T15:56:02-04:00
+            Purpose: Renders a continuous high-relief terrain basemap beneath NJ outlines.
+            Reason: Clipping and filling NJ made the terrain look like a flat cutout, so High Relief mode now combines a terrain base with exaggerated elevation texture and outline-only county boundaries. */}
         {activeLayers.highRelief && (
-          <TileLayer
-            attribution={HIGH_RELIEF_LAYER.attribution}
-            className="high-relief-tiles"
-            opacity={1}
-            url={HIGH_RELIEF_LAYER.url}
-            zIndex={180}
-          />
+          <>
+            <TileLayer
+              attribution={HIGH_RELIEF_BASE_LAYER.attribution}
+              className="high-relief-base-tiles"
+              opacity={1}
+              url={HIGH_RELIEF_BASE_LAYER.url}
+              zIndex={175}
+            />
+            <TileLayer
+              attribution={HIGH_RELIEF_TEXTURE_LAYER.attribution}
+              className="high-relief-texture-tiles"
+              opacity={0.48}
+              url={HIGH_RELIEF_TEXTURE_LAYER.url}
+              zIndex={185}
+            />
+          </>
         )}
         {/* AI_CHANGE:
             Tool: Codex
@@ -748,13 +761,13 @@ export default function MapArea({
             Reason: Users requested visible zoom in/out controls, and top-right placement keeps the widget clear of the default left-side layer panel. */}
         <ZoomControl position="topright" />
         <FitCountyBounds countyData={countyData} isLeftAligned={isLeftAligned} />
-        {stateMaskPositions && (
+        {stateMaskPositions && !activeLayers.highRelief && (
           <Polygon
             positions={stateMaskPositions}
             pathOptions={{
               stroke: false,
               fillColor: '#0f172a',
-              fillOpacity: 0.26,
+              fillOpacity: activeLayers.highRelief ? 0.38 : 0.26,
               fillRule: 'evenodd'
             }}
             interactive={false}

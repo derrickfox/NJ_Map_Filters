@@ -256,9 +256,9 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
-   Timestamp: 2026-06-08T15:22:17-04:00
+   Timestamp: 2026-06-08T15:56:02-04:00
    Purpose: Adds the control state and tile treatment for the High Relief overlay.
-   Reason: Users requested a dramatic terrain layer, and the first hillshade pass was too faint over existing basemaps. */
+   Reason: Users requested a dramatic terrain layer, and prior versions were either too washed out or looked like a clipped flat state shape. */
 .glass-button.active-relief {
   border-color: #713f12;
   background: #854d0e;
@@ -266,9 +266,18 @@ body {
   box-shadow: 0 0 12px rgba(133, 77, 14, 0.3);
 }
 
-.high-relief-tiles {
-  filter: contrast(2.45) saturate(1.32) sepia(0.24) brightness(0.94);
+.high-relief-base-tiles {
+  filter: contrast(1.35) saturate(1.2) sepia(0.16) brightness(0.88);
+}
+
+.high-relief-texture-tiles {
+  filter: hue-rotate(150deg) saturate(0.18) contrast(1.55) sepia(0.48) brightness(1.06);
   mix-blend-mode: normal;
+}
+
+.high-relief-texture-tiles .leaflet-tile {
+  height: 256px !important;
+  width: 256px !important;
 }
 
 /* AI_CHANGE:
