@@ -256,9 +256,9 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
-   Timestamp: 2026-06-08T16:41:05-04:00
+   Timestamp: 2026-06-08T16:57:44-04:00
    Purpose: Adds the control state and tile treatment for the High Relief overlay.
-   Reason: Users requested a dramatic terrain layer, and prior color treatments were either too washed out, unnaturally bleak, or visibly tiled. */
+   Reason: Users requested a dramatic terrain layer, and prior color treatments lacked the blue water, settlement color, and printed-map feel shown in the reference. */
 .glass-button.active-relief {
   border-color: #713f12;
   background: #854d0e;
@@ -267,11 +267,11 @@ body {
 }
 
 .high-relief-base-tiles {
-  filter: hue-rotate(334deg) contrast(1.26) saturate(1.9) sepia(0.48) brightness(0.94);
+  filter: contrast(1.08) saturate(1.24) sepia(0.04) brightness(1.02);
 }
 
 .high-relief-texture-tiles {
-  filter: saturate(0) contrast(3.25) sepia(0.58) brightness(0.95);
+  filter: saturate(0) contrast(3.35) sepia(0.08) brightness(1.03);
   mix-blend-mode: multiply;
 }
 
@@ -668,6 +668,14 @@ body {
   pointer-events: none;
   text-shadow: 0 0 5px rgba(255, 255, 255, 1), 0 0 12px rgba(255, 255, 255, 0.9);
   white-space: nowrap;
+}
+
+.county-label--relief {
+  color: rgba(15, 23, 42, 0.62);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.78), 0 0 8px rgba(255, 255, 255, 0.55);
 }
 
 .county-popup {

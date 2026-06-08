@@ -44,9 +44,8 @@ const BASEMAPS = {
   }
 };
 const HIGH_RELIEF_BASE_LAYER = {
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  url: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'
+  attribution: 'Topo tiles &copy; USGS National Map',
+  url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'
 };
 const HIGH_RELIEF_TEXTURE_LAYER = {
   attribution: 'Relief tiles &copy; Mapzen terrain tiles contributors',
@@ -115,7 +114,7 @@ function FitCountyBounds({ countyData, isLeftAligned }) {
   return null;
 }
 
-function CountyLabels({ features }) {
+function CountyLabels({ features, isHighRelief = false }) {
   return features.map((feature) => {
     const bounds = L.geoJSON(feature).getBounds();
     if (!bounds.isValid()) return null;
@@ -123,7 +122,7 @@ function CountyLabels({ features }) {
     const name = getCountyName(feature).replace(/\s+County$/i, '');
     const labelIcon = L.divIcon({
       className: 'county-label-marker',
-      html: `<span class="county-label">${escapeHtml(name)}</span>`,
+      html: `<span class="county-label${isHighRelief ? ' county-label--relief' : ''}">${escapeHtml(name)}</span>`,
       iconSize: [0, 0],
       iconAnchor: [0, 0]
     });
@@ -674,9 +673,9 @@ export default function MapArea({
     const color = colorByCounty.get(countyName) || '#2563eb';
 
     return {
-      color: activeLayers.highRelief ? '#334155' : isSelected ? '#0f172a' : color,
-      weight: activeLayers.highRelief ? (isSelected ? 3 : 1.25) : isSelected ? 4 : 2,
-      opacity: activeLayers.highRelief ? 0.52 : 0.95,
+      color: activeLayers.highRelief ? '#1f2937' : isSelected ? '#0f172a' : color,
+      weight: activeLayers.highRelief ? (isSelected ? 2 : 0.7) : isSelected ? 4 : 2,
+      opacity: activeLayers.highRelief ? 0.26 : 0.95,
       fillColor: color,
       fillOpacity: activeLayers.highRelief ? 0 : isSelected ? 0.36 : 0.2
     };
@@ -733,9 +732,9 @@ export default function MapArea({
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T16:41:05-04:00
+            Timestamp: 2026-06-08T16:57:44-04:00
             Purpose: Renders a continuous high-relief terrain basemap beneath NJ outlines.
-            Reason: Earlier relief treatments were either washed out, bleak, or seam-heavy, so High Relief now uses a warm no-label base with scaled grayscale terrain-normal texture and outline-only county boundaries. */}
+            Reason: Earlier relief treatments lost cartographic color, so High Relief now uses a colored USGS topo base with scaled grayscale terrain-normal texture and outline-only county boundaries. */}
         {activeLayers.highRelief && (
           <>
             <TileLayer
@@ -750,7 +749,7 @@ export default function MapArea({
             <TileLayer
               attribution={HIGH_RELIEF_TEXTURE_LAYER.attribution}
               className="high-relief-texture-tiles"
-              opacity={0.82}
+              opacity={0.62}
               tileSize={512}
               url={HIGH_RELIEF_TEXTURE_LAYER.url}
               zoomOffset={-1}
@@ -787,7 +786,7 @@ export default function MapArea({
               style={countyStyle}
               onEachFeature={onEachCounty}
             />
-            <CountyLabels features={visibleFeatures} />
+            <CountyLabels features={visibleFeatures} isHighRelief={activeLayers.highRelief} />
           </>
         )}
         {activeLayers.canals && visibleCanalData && (
