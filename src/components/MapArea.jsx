@@ -44,8 +44,9 @@ const BASEMAPS = {
   }
 };
 const HIGH_RELIEF_BASE_LAYER = {
-  attribution: 'Relief tiles &copy; Esri, USGS, NOAA',
-  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}'
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  url: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'
 };
 const HIGH_RELIEF_TEXTURE_LAYER = {
   attribution: 'Relief tiles &copy; Mapzen terrain tiles contributors',
@@ -732,9 +733,9 @@ export default function MapArea({
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T16:12:48-04:00
+            Timestamp: 2026-06-08T16:41:05-04:00
             Purpose: Renders a continuous high-relief terrain basemap beneath NJ outlines.
-            Reason: Clipping and filling NJ made the terrain look flat, while raw elevation colors looked bleak, so High Relief mode now blends a warm terrain base with grayscale relief texture and outline-only county boundaries. */}
+            Reason: Earlier relief treatments were either washed out, bleak, or seam-heavy, so High Relief now uses a warm no-label base with scaled grayscale terrain-normal texture and outline-only county boundaries. */}
         {activeLayers.highRelief && (
           <>
             <TileLayer
@@ -747,8 +748,10 @@ export default function MapArea({
             <TileLayer
               attribution={HIGH_RELIEF_TEXTURE_LAYER.attribution}
               className="high-relief-texture-tiles"
-              opacity={0.52}
+              opacity={0.82}
+              tileSize={512}
               url={HIGH_RELIEF_TEXTURE_LAYER.url}
+              zoomOffset={-1}
               zIndex={185}
             />
           </>

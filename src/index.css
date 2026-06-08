@@ -256,9 +256,9 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
-   Timestamp: 2026-06-08T16:12:48-04:00
+   Timestamp: 2026-06-08T16:41:05-04:00
    Purpose: Adds the control state and tile treatment for the High Relief overlay.
-   Reason: Users requested a dramatic terrain layer, and prior color treatments were either too washed out or unnaturally bleak. */
+   Reason: Users requested a dramatic terrain layer, and prior color treatments were either too washed out, unnaturally bleak, or visibly tiled. */
 .glass-button.active-relief {
   border-color: #713f12;
   background: #854d0e;
@@ -267,12 +267,18 @@ body {
 }
 
 .high-relief-base-tiles {
-  filter: contrast(1.24) saturate(1.35) sepia(0.24) brightness(0.96);
+  filter: hue-rotate(334deg) contrast(1.26) saturate(1.9) sepia(0.48) brightness(0.94);
 }
 
 .high-relief-texture-tiles {
-  filter: saturate(0.04) contrast(1.95) sepia(0.34) brightness(1.04);
-  mix-blend-mode: luminosity;
+  filter: saturate(0) contrast(3.25) sepia(0.58) brightness(0.95);
+  mix-blend-mode: multiply;
+}
+
+.high-relief-base-tiles .leaflet-tile,
+.high-relief-texture-tiles .leaflet-tile {
+  transform-origin: top left;
+  scale: 1.008;
 }
 
 /* AI_CHANGE:
