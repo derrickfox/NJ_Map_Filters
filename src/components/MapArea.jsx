@@ -45,7 +45,7 @@ const BASEMAPS = {
 };
 const HIGH_RELIEF_LAYER = {
   attribution: 'Relief tiles &copy; Esri, USGS, NOAA',
-  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}'
 };
 const COUNTY_COLORS = [
   '#2563eb',
@@ -722,19 +722,20 @@ export default function MapArea({
         <TileLayer
           key={baseMap}
           attribution={selectedBaseMap.attribution}
+          opacity={activeLayers.highRelief ? 0.16 : 1}
           url={selectedBaseMap.url}
         />
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T15:01:23-04:00
-            Purpose: Renders a high-contrast hillshade overlay beneath NJ data layers.
-            Reason: Users requested an extreme relief terrain layer similar in feel to 3D relief maps without relying on proprietary product artwork. */}
+            Timestamp: 2026-06-08T15:22:17-04:00
+            Purpose: Renders a dominant high-contrast shaded relief basemap beneath NJ data layers.
+            Reason: The earlier hillshade-only overlay was too subtle over the existing basemaps, so High Relief now visibly takes over the terrain read when enabled. */}
         {activeLayers.highRelief && (
           <TileLayer
             attribution={HIGH_RELIEF_LAYER.attribution}
             className="high-relief-tiles"
-            opacity={0.92}
+            opacity={1}
             url={HIGH_RELIEF_LAYER.url}
             zIndex={180}
           />
