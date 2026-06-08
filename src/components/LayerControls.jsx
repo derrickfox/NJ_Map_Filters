@@ -11,6 +11,7 @@ import {
   Landmark,
   Layers,
   Map,
+  Mountain,
   Search,
   TreePine,
   Train,
@@ -201,6 +202,27 @@ export default function LayerControls({
           </section>
 
           <section className="layer-group">
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T15:01:23-04:00
+                Purpose: Adds a High Relief terrain overlay control near the basemap chooser.
+                Reason: Users requested an extreme shaded terrain layer that can be toggled independently from the plain and terrain basemaps. */}
+            <button
+              type="button"
+              className={`glass-button layer-toggle ${activeLayers.highRelief ? 'active-relief' : ''}`}
+              onClick={() => toggleLayer('highRelief')}
+            >
+              <span>
+                <Mountain size={18} color={activeLayers.highRelief ? '#ffffff' : '#854d0e'} />
+                High Relief
+              </span>
+              {activeLayers.highRelief ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+            <p className="layer-summary">High-contrast shaded relief terrain</p>
+          </section>
+
+          <section className="layer-group">
             <button
               type="button"
               className={`glass-button layer-toggle ${activeLayers.counties ? 'active-orange' : ''}`}
@@ -305,7 +327,7 @@ export default function LayerControls({
                 Model: GPT-5
                 Timestamp: 2026-06-08T14:21:42-04:00
                 Purpose: Adds controls for the Forest Composition layer group.
-                Reason: Users requested switchable forest type, dominant species, and species abundance views with a species picker and opacity control. */}
+                Reason: Users requested switchable forest type, dominant species, and species abundance views with a species picker. */}
             <button
               type="button"
               className={`glass-button layer-toggle ${activeLayers.trees ? 'active-forest' : ''}`}

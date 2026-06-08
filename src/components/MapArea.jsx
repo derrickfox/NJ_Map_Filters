@@ -43,6 +43,10 @@ const BASEMAPS = {
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
   }
 };
+const HIGH_RELIEF_LAYER = {
+  attribution: 'Relief tiles &copy; Esri, USGS, NOAA',
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'
+};
 const COUNTY_COLORS = [
   '#2563eb',
   '#16a34a',
@@ -720,6 +724,21 @@ export default function MapArea({
           attribution={selectedBaseMap.attribution}
           url={selectedBaseMap.url}
         />
+        {/* AI_CHANGE:
+            Tool: Codex
+            Model: GPT-5
+            Timestamp: 2026-06-08T15:01:23-04:00
+            Purpose: Renders a high-contrast hillshade overlay beneath NJ data layers.
+            Reason: Users requested an extreme relief terrain layer similar in feel to 3D relief maps without relying on proprietary product artwork. */}
+        {activeLayers.highRelief && (
+          <TileLayer
+            attribution={HIGH_RELIEF_LAYER.attribution}
+            className="high-relief-tiles"
+            opacity={0.92}
+            url={HIGH_RELIEF_LAYER.url}
+            zIndex={180}
+          />
+        )}
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5

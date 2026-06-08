@@ -70,6 +70,13 @@ function App() {
   // Reason: The NJ sibling app should mirror the DC map filter pattern while starting from county boundaries and growing into NJ-specific layers.
   const [activeLayers, setActiveLayers] = useState({
     counties: true,
+    // AI_CHANGE:
+    // Tool: Codex
+    // Model: GPT-5
+    // Timestamp: 2026-06-08T15:01:23-04:00
+    // Purpose: Adds a toggleable High Relief terrain overlay to the shared layer state.
+    // Reason: Users requested an extreme relief map layer inspired by 3D terrain artwork while keeping counties as the default first layer.
+    highRelief: false,
     canals: false,
     parks: false,
     municipalities: false,
