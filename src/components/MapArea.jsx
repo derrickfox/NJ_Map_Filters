@@ -742,7 +742,9 @@ export default function MapArea({
               attribution={HIGH_RELIEF_BASE_LAYER.attribution}
               className="high-relief-base-tiles"
               opacity={1}
+              tileSize={512}
               url={HIGH_RELIEF_BASE_LAYER.url}
+              zoomOffset={-1}
               zIndex={175}
             />
             <TileLayer
