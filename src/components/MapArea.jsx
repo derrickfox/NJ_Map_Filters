@@ -49,7 +49,7 @@ const HIGH_RELIEF_BASE_LAYER = {
 };
 const HIGH_RELIEF_TEXTURE_LAYER = {
   attribution: 'Relief tiles &copy; Mapzen terrain tiles contributors',
-  url: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+  url: 'https://s3.amazonaws.com/elevation-tiles-prod/normal/{z}/{x}/{y}.png'
 };
 const COUNTY_COLORS = [
   '#2563eb',
@@ -732,9 +732,9 @@ export default function MapArea({
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T15:56:02-04:00
+            Timestamp: 2026-06-08T16:12:48-04:00
             Purpose: Renders a continuous high-relief terrain basemap beneath NJ outlines.
-            Reason: Clipping and filling NJ made the terrain look like a flat cutout, so High Relief mode now combines a terrain base with exaggerated elevation texture and outline-only county boundaries. */}
+            Reason: Clipping and filling NJ made the terrain look flat, while raw elevation colors looked bleak, so High Relief mode now blends a warm terrain base with grayscale relief texture and outline-only county boundaries. */}
         {activeLayers.highRelief && (
           <>
             <TileLayer
@@ -747,7 +747,7 @@ export default function MapArea({
             <TileLayer
               attribution={HIGH_RELIEF_TEXTURE_LAYER.attribution}
               className="high-relief-texture-tiles"
-              opacity={0.48}
+              opacity={0.52}
               url={HIGH_RELIEF_TEXTURE_LAYER.url}
               zIndex={185}
             />
