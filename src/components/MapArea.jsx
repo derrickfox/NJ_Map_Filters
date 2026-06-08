@@ -44,8 +44,9 @@ const BASEMAPS = {
   }
 };
 const HIGH_RELIEF_BASE_LAYER = {
-  attribution: 'Topo tiles &copy; USGS National Map',
-  url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 };
 const HIGH_RELIEF_TEXTURE_LAYER = {
   attribution: 'Relief tiles &copy; Mapzen terrain tiles contributors',
@@ -732,27 +733,23 @@ export default function MapArea({
         {/* AI_CHANGE:
             Tool: Codex
             Model: GPT-5
-            Timestamp: 2026-06-08T16:57:44-04:00
+            Timestamp: 2026-06-08T17:08:56-04:00
             Purpose: Renders a continuous high-relief terrain basemap beneath NJ outlines.
-            Reason: Earlier relief treatments lost cartographic color, so High Relief now uses a colored USGS topo base with scaled grayscale terrain-normal texture and outline-only county boundaries. */}
+            Reason: Earlier relief treatments used flat or old-looking topo tiles, so High Relief now uses a modern colored map base with a stronger terrain-normal relief plate and outline-only county boundaries. */}
         {activeLayers.highRelief && (
           <>
             <TileLayer
               attribution={HIGH_RELIEF_BASE_LAYER.attribution}
               className="high-relief-base-tiles"
               opacity={1}
-              tileSize={512}
               url={HIGH_RELIEF_BASE_LAYER.url}
-              zoomOffset={-1}
               zIndex={175}
             />
             <TileLayer
               attribution={HIGH_RELIEF_TEXTURE_LAYER.attribution}
               className="high-relief-texture-tiles"
-              opacity={0.62}
-              tileSize={512}
+              opacity={0.92}
               url={HIGH_RELIEF_TEXTURE_LAYER.url}
-              zoomOffset={-1}
               zIndex={185}
             />
           </>

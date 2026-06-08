@@ -256,9 +256,9 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
-   Timestamp: 2026-06-08T16:57:44-04:00
+   Timestamp: 2026-06-08T17:08:56-04:00
    Purpose: Adds the control state and tile treatment for the High Relief overlay.
-   Reason: Users requested a dramatic terrain layer, and prior color treatments lacked the blue water, settlement color, and printed-map feel shown in the reference. */
+   Reason: Users requested a dramatic terrain layer, and prior color treatments either lacked color or read like an old topo basemap instead of raised relief. */
 .glass-button.active-relief {
   border-color: #713f12;
   background: #854d0e;
@@ -267,11 +267,11 @@ body {
 }
 
 .high-relief-base-tiles {
-  filter: contrast(1.08) saturate(1.24) sepia(0.04) brightness(1.02);
+  filter: contrast(1.08) saturate(1.22) brightness(1.02);
 }
 
 .high-relief-texture-tiles {
-  filter: saturate(0) contrast(3.35) sepia(0.08) brightness(1.03);
+  filter: saturate(0) contrast(7.4) brightness(0.82);
   mix-blend-mode: multiply;
 }
 
