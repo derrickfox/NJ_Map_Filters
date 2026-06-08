@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { CircleMarker, GeoJSON, MapContainer, Marker, Polygon, Popup, TileLayer, useMap, ZoomControl } from 'react-leaflet';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { CircleMarker, GeoJSON, MapContainer, Marker, Polygon, Popup, TileLayer, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -64,6 +64,18 @@ const COUNTY_COLORS = [
   '#4f46e5',
   '#db2777'
 ];
+const MUNICIPALITY_COLORS = [
+  '#f97316',
+  '#22c55e',
+  '#06b6d4',
+  '#8b5cf6',
+  '#eab308',
+  '#ec4899',
+  '#14b8a6',
+  '#f43f5e',
+  '#84cc16',
+  '#0ea5e9'
+];
 
 function getCountyName(feature) {
   return (
@@ -77,6 +89,21 @@ function getCountyName(feature) {
 
 function getCountySeat(feature) {
   return feature?.properties?.COUNTY_SEAT || feature?.properties?.SEAT || feature?.properties?.CNTY_SEAT || '';
+}
+
+function getMunicipalityName(feature) {
+  return feature?.properties?.MUN_LABEL || feature?.properties?.NAME || 'Unnamed municipality';
+}
+
+function getMunicipalityKey(feature) {
+  const properties = feature?.properties || {};
+  return `${properties.MUN_CODE || ''}-${getMunicipalityName(feature)}-${properties.COUNTY || ''}`;
+}
+
+function hashText(value) {
+  return String(value).split('').reduce((hash, character) => {
+    return (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }, 0);
 }
 
 function escapeHtml(value) {
@@ -131,6 +158,53 @@ function CountyLabels({ features, isHighRelief = false }) {
     return (
       <Marker
         key={`label-${name}`}
+        position={[center.lat, center.lng]}
+        icon={labelIcon}
+        interactive={false}
+      />
+    );
+  });
+}
+
+function MapZoomState({ onZoomChange }) {
+  const map = useMapEvents({
+    zoomend: () => onZoomChange(map.getZoom())
+  });
+
+  useEffect(() => {
+    onZoomChange(map.getZoom());
+  }, [map, onZoomChange]);
+
+  return null;
+}
+
+function shouldShowMunicipalityLabel(feature, zoom) {
+  const properties = feature?.properties || {};
+  const population = Number(properties.POP2020) || 0;
+  const squareMiles = Number(properties.SQ_MILES) || 0;
+
+  if (zoom >= 10) return true;
+  if (zoom >= 9) return population >= 30000 || squareMiles >= 28;
+  if (zoom >= 8) return population >= 80000 || squareMiles >= 55;
+  return population >= 90000 || squareMiles >= 45;
+}
+
+function MunicipalityLabels({ features, zoom }) {
+  return features.filter((feature) => shouldShowMunicipalityLabel(feature, zoom)).map((feature) => {
+    const bounds = L.geoJSON(feature).getBounds();
+    if (!bounds.isValid()) return null;
+    const center = bounds.getCenter();
+    const name = getMunicipalityName(feature).replace(/\s+(Township|Borough|City|Town|Village)$/i, '');
+    const labelIcon = L.divIcon({
+      className: 'municipality-label-marker',
+      html: `<span class="municipality-label">${escapeHtml(name)}</span>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    });
+
+    return (
+      <Marker
+        key={`municipality-label-${getMunicipalityKey(feature)}`}
         position={[center.lat, center.lng]}
         icon={labelIcon}
         interactive={false}
@@ -294,6 +368,7 @@ export default function MapArea({
   loadingLayers = []
 }) {
   const geoJsonLayerRef = useRef(null);
+  const [mapZoom, setMapZoom] = useState(8);
   const selectedBaseMap = BASEMAPS[baseMap] || BASEMAPS.plain;
 
   // AI_CHANGE:
@@ -479,15 +554,19 @@ export default function MapArea({
   // AI_CHANGE:
   // Tool: Codex
   // Model: GPT-5
-  // Timestamp: 2026-06-08T13:17:49-04:00
-  // Purpose: Styles NJ municipal polygons for the Towns & Cities area layer.
-  // Reason: The layer should show statewide municipal coverage while remaining visually distinct from counties, parks, and canals.
-  const municipalityStyle = {
-    color: '#7c3aed',
-    weight: 1,
-    opacity: 0.82,
-    fillColor: '#a78bfa',
-    fillOpacity: 0.22
+  // Timestamp: 2026-06-08T17:58:42-04:00
+  // Purpose: Styles NJ municipal polygons with deterministic varied colors for the Towns & Cities area layer.
+  // Reason: Users requested less monotonous town areas, and stable per-municipality colors make adjacent places easier to scan.
+  const municipalityStyle = (feature) => {
+    const color = MUNICIPALITY_COLORS[hashText(getMunicipalityKey(feature)) % MUNICIPALITY_COLORS.length];
+
+    return {
+      color,
+      weight: 0.9,
+      opacity: 0.78,
+      fillColor: color,
+      fillOpacity: 0.28
+    };
   };
 
   const onEachMunicipality = (feature, layer) => {
@@ -710,6 +789,7 @@ export default function MapArea({
   };
 
   const visibleFeatures = visibleCountyData?.features || [];
+  const municipalityFeatures = municipalityData?.features || [];
 
   return (
     <div className="map-stage">
@@ -761,6 +841,7 @@ export default function MapArea({
             Purpose: Adds a top-right zoom widget to the map.
             Reason: Users requested visible zoom in/out controls, and top-right placement keeps the widget clear of the default left-side layer panel. */}
         <ZoomControl position="topright" />
+        <MapZoomState onZoomChange={setMapZoom} />
         <FitCountyBounds countyData={countyData} isLeftAligned={isLeftAligned} />
         {stateMaskPositions && !activeLayers.highRelief && (
           <Polygon
@@ -783,7 +864,7 @@ export default function MapArea({
               style={countyStyle}
               onEachFeature={onEachCounty}
             />
-            <CountyLabels features={visibleFeatures} isHighRelief={activeLayers.highRelief} />
+            {!activeLayers.municipalities && <CountyLabels features={visibleFeatures} isHighRelief={activeLayers.highRelief} />}
           </>
         )}
         {activeLayers.canals && visibleCanalData && (
@@ -814,12 +895,21 @@ export default function MapArea({
           <GeoJSON key={`parks-${parkData.features?.length || 0}`} data={parkData} style={parkStyle} onEachFeature={onEachPark} />
         )}
         {activeLayers.municipalities && municipalityData && (
-          <GeoJSON
-            key={`municipalities-${municipalityData.features?.length || 0}`}
-            data={municipalityData}
-            style={municipalityStyle}
-            onEachFeature={onEachMunicipality}
-          />
+          <>
+            <GeoJSON
+              key={`municipalities-${municipalityData.features?.length || 0}`}
+              data={municipalityData}
+              style={municipalityStyle}
+              onEachFeature={onEachMunicipality}
+            />
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T17:58:42-04:00
+                Purpose: Adds zoom-aware municipality labels for the Towns & Cities layer.
+                Reason: Users requested town labels at a glance, while zoom thresholds prevent statewide label clutter. */}
+            <MunicipalityLabels features={municipalityFeatures} zoom={mapZoom} />
+          </>
         )}
         {activeLayers.rail && railData && (
           <GeoJSON

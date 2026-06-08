@@ -678,6 +678,32 @@ body {
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.78), 0 0 8px rgba(255, 255, 255, 0.55);
 }
 
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T17:58:42-04:00
+   Purpose: Styles Towns & Cities labels for dense municipal map reading.
+   Reason: Users requested at-a-glance town labels, and compact labels keep the municipal layer useful without overwhelming the map. */
+.municipality-label-marker {
+  border: 0;
+  background: transparent;
+}
+
+.municipality-label {
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  color: rgba(30, 41, 59, 0.9);
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.96), 0 0 10px rgba(255, 255, 255, 0.86);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .county-popup {
   min-width: 150px;
 }
