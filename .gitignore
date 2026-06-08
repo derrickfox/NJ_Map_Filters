@@ -1,0 +1,16 @@
+# AI_CHANGE:
+# Tool: Codex
+# Model: GPT-5
+# Timestamp: 2026-06-08T14:38:41-04:00
+# Purpose: Adds standard Vite/Node ignore rules before publishing the project to GitHub.
+# Reason: The repo should include source and configuration, not generated dependencies, local build output, or machine-specific files.
+node_modules/
+dist/
+.DS_Store
+*.local
+.env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

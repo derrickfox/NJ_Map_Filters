@@ -1,0 +1,1065 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --bg-dark: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.78);
+  --border-glass: rgba(255, 255, 255, 0.65);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent-primary: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.25);
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#root,
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+}
+
+.glass-panel {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.map-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-dark);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:24:35-04:00
+   Purpose: Styles the map-level layer loading widget.
+   Reason: Users need an obvious but unobtrusive signal while selected layers are still fetching or rendering. */
+.map-loading-widget {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 900;
+  display: inline-flex;
+  max-width: min(320px, calc(100vw - 48px));
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 10px 14px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.map-loading-widget__spinner {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(37, 99, 235, 0.18);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: loading-spin 0.8s linear infinite;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.layer-panel {
+  position: absolute;
+  top: 24px;
+  z-index: 1000;
+  display: flex;
+  width: 320px;
+  max-height: calc(100vh - 48px);
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 20px;
+  transition: left 0.25s ease, right 0.25s ease;
+}
+
+.panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+
+.panel-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.icon-button,
+.search-box button,
+.county-visibility {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 30px;
+  height: 30px;
+}
+
+.icon-button.is-active {
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.18);
+  color: #16a34a;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.search-box > svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+}
+
+.search-box input {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+  padding: 10px 36px;
+}
+
+.search-box button {
+  position: absolute;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  background: transparent;
+}
+
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 16px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.glass-button.active-orange {
+  border-color: #ea580c;
+  background: #f97316;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.34);
+}
+
+.glass-button.active-blue {
+  border-color: #0369a1;
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.34);
+}
+
+.glass-button.active-green {
+  border-color: #15803d;
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.34);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T14:21:42-04:00
+   Purpose: Adds polished controls, legend, and popup styling for the Forest Composition layer group.
+   Reason: Users requested a scientific/educational map layer with switchable forest type, dominant species, and abundance views that remain readable over the basemap. */
+.glass-button.active-forest {
+  border-color: #14532d;
+  background: #166534;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(22, 101, 52, 0.3);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:17:49-04:00
+   Purpose: Adds visual styling for the Towns & Cities layer control and popups.
+   Reason: The new municipal area layer needs distinct panel state and readable feature details. */
+.glass-button.active-purple {
+  border-color: #6d28d9;
+  background: #7c3aed;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.32);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:40:16-04:00
+   Purpose: Adds control and popup styling for the Attractions point layer.
+   Reason: Attractions need a distinct marker/control color from parks, municipalities, and Weird NJ locations. */
+.glass-button.active-yellow {
+  border-color: #a16207;
+  background: #ca8a04;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(202, 138, 4, 0.3);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:49:31-04:00
+   Purpose: Adds control and popup styling for the active Rail line layer.
+   Reason: Rail infrastructure needs a high-contrast visual treatment that stays legible over counties and basemap tiles. */
+.glass-button.active-ink {
+  border-color: #111827;
+  background: #1f2937;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(17, 24, 39, 0.24);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T14:10:54-04:00
+   Purpose: Adds control and popup styling for the Historical Sites point layer.
+   Reason: Historical site markers need a distinct, readable treatment separate from attractions, rail, and Weird NJ overlays. */
+.glass-button.active-red {
+  border-color: #991b1b;
+  background: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(185, 28, 28, 0.3);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:29:19-04:00
+   Purpose: Adds control and popup styling for the Weird NJ point layer.
+   Reason: The Weird NJ layer needs to stand apart from administrative and environmental overlays while keeping source links readable. */
+.glass-button.active-rose {
+  border-color: #be123c;
+  background: #e11d48;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(225, 29, 72, 0.32);
+}
+
+.layer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layer-toggle {
+  width: 100%;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.layer-toggle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.layer-toggle__actions {
+  margin: -4px;
+}
+
+.layer-toggle__actions span {
+  padding: 4px;
+}
+
+.layer-summary,
+.status-message {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.status-message {
+  padding: 8px;
+  text-align: center;
+}
+
+.status-message--error {
+  border: 1px solid rgba(220, 38, 38, 0.24);
+  border-radius: 8px;
+  background: rgba(254, 226, 226, 0.75);
+  color: var(--danger);
+}
+
+.basemap-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.basemap-control__label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.basemap-segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  min-width: 160px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 3px;
+}
+
+.basemap-segment button {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.basemap-segment button.is-selected {
+  background: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.selected-chip {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.county-list {
+  display: flex;
+  max-height: 300px;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 8px;
+}
+
+.county-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.county-row.is-selected {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.county-name {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.county-visibility {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  background: transparent;
+}
+
+.canal-filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 8px;
+}
+
+.canal-filter-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  padding: 8px;
+  text-align: left;
+}
+
+.canal-filter-row:hover {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.canal-filter-row.is-muted {
+  color: var(--text-secondary);
+  opacity: 0.58;
+}
+
+.canal-swatch {
+  width: 24px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.canal-swatch--current {
+  background: #38bdf8;
+  box-shadow: inset 0 0 0 2px #0284c7;
+}
+
+.canal-swatch--historic {
+  background: repeating-linear-gradient(
+    90deg,
+    #f59e0b 0,
+    #f59e0b 7px,
+    transparent 7px,
+    transparent 12px
+  );
+  box-shadow: inset 0 0 0 2px #b45309;
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T13:57:00-04:00
+   Purpose: Adds visual treatments for historic railroad and border-canal sub-layer controls and popups.
+   Reason: The renamed Canals & Historic RR layer now includes likely inactive rail corridors and non-NJ border canals alongside NJDEP canal features. */
+.canal-swatch--historic-rail {
+  background: repeating-linear-gradient(
+    90deg,
+    #78350f 0,
+    #78350f 3px,
+    transparent 3px,
+    transparent 9px
+  );
+  box-shadow: inset 0 0 0 2px #78350f;
+}
+
+.canal-swatch--border-canal {
+  background: repeating-linear-gradient(
+    90deg,
+    #0f766e 0,
+    #0f766e 8px,
+    transparent 8px,
+    transparent 14px
+  );
+  box-shadow: inset 0 0 0 2px #0f766e;
+}
+
+.canal-filter-label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.canal-filter-label strong {
+  font-size: 13px;
+}
+
+.canal-filter-label span {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.tree-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 10px;
+}
+
+.tree-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.tree-mode-grid button {
+  border: 1px solid rgba(20, 83, 45, 0.16);
+  border-radius: 7px;
+  background: rgba(240, 253, 244, 0.72);
+  color: #14532d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 8px 9px;
+  text-align: left;
+}
+
+.tree-mode-grid button.is-selected {
+  background: #166534;
+  color: #ffffff;
+  box-shadow: 0 5px 12px rgba(20, 83, 45, 0.18);
+}
+
+.tree-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tree-field span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tree-field select {
+  width: 100%;
+  border: 1px solid rgba(20, 83, 45, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px;
+}
+
+.county-label-marker {
+  border: 0;
+  background: transparent;
+}
+
+.county-label {
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  color: #0f172a;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 1), 0 0 12px rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+.county-popup {
+  min-width: 150px;
+}
+
+.county-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.county-popup__meta {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.canal-popup {
+  min-width: 190px;
+}
+
+.canal-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.canal-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.canal-popup__row strong {
+  color: var(--text-primary);
+}
+
+.historic-rail-popup {
+  min-width: 190px;
+}
+
+.historic-rail-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.historic-rail-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.historic-rail-popup__row strong {
+  color: var(--text-primary);
+}
+
+.border-canal-popup {
+  min-width: 210px;
+  max-width: 270px;
+}
+
+.border-canal-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.border-canal-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.border-canal-popup__row strong {
+  color: var(--text-primary);
+}
+
+.border-canal-popup__link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.border-canal-popup__link:hover {
+  text-decoration: underline;
+}
+
+.park-popup {
+  min-width: 180px;
+}
+
+.park-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.park-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.park-popup__row strong {
+  color: var(--text-primary);
+}
+
+.municipality-popup {
+  min-width: 190px;
+}
+
+.municipality-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.municipality-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.municipality-popup__row strong {
+  color: var(--text-primary);
+}
+
+.rail-popup {
+  min-width: 190px;
+}
+
+.rail-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.rail-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.rail-popup__row strong {
+  color: var(--text-primary);
+}
+
+.historical-site-popup {
+  min-width: 210px;
+  max-width: 270px;
+}
+
+.historical-site-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.historical-site-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.historical-site-popup__row strong {
+  color: var(--text-primary);
+}
+
+.tree-popup {
+  min-width: 230px;
+  max-width: 300px;
+}
+
+.tree-popup__eyebrow {
+  color: #166534;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.tree-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.tree-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.tree-popup__row strong {
+  color: var(--text-primary);
+}
+
+.tree-popup__note {
+  border-radius: 7px;
+  background: rgba(240, 253, 244, 0.86);
+  color: #14532d;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 8px;
+  padding: 7px;
+}
+
+.tree-legend {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  z-index: 850;
+  width: min(300px, calc(100vw - 48px));
+  padding: 14px;
+}
+
+.tree-legend__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.tree-legend__heading span {
+  color: #166534;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.tree-legend__heading strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.tree-legend__status {
+  border-radius: 7px;
+  background: rgba(254, 249, 195, 0.78);
+  color: #854d0e;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  padding: 7px 8px;
+}
+
+.tree-legend__items {
+  display: grid;
+  gap: 6px;
+}
+
+.tree-legend__item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tree-legend__swatch {
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 4px;
+}
+
+.attraction-popup {
+  min-width: 210px;
+  max-width: 260px;
+}
+
+.attraction-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.attraction-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.attraction-popup__row strong {
+  color: var(--text-primary);
+}
+
+.attraction-popup__link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #a16207;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.attraction-popup__link:hover {
+  text-decoration: underline;
+}
+
+.weird-nj-popup {
+  min-width: 210px;
+  max-width: 260px;
+}
+
+.weird-nj-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.weird-nj-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.weird-nj-popup__row strong {
+  color: var(--text-primary);
+}
+
+.weird-nj-popup__link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #be123c;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.weird-nj-popup__link:hover {
+  text-decoration: underline;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border: 1px solid var(--border-glass);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.15);
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+}
+
+.error-shell {
+  max-width: 640px;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+.error-shell h1 {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+}
+
+.error-shell p {
+  color: #444;
+}
+
+.error-shell pre {
+  margin-top: 12px;
+  overflow: auto;
+  border-radius: 8px;
+  background: #f4f4f5;
+  padding: 12px;
+  font-size: 13px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.22);
+}
+
+@media (max-width: 720px) {
+  .layer-panel {
+    top: 12px;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto;
+    max-height: 46vh;
+    padding: 16px;
+  }
+
+  .panel-heading h2 {
+    font-size: 1.25rem;
+  }
+}
