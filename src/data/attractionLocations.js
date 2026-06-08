@@ -1,10 +1,20 @@
 // AI_CHANGE:
 // Tool: Codex
 // Model: GPT-5
-// Timestamp: 2026-06-08T13:40:16-04:00
-// Purpose: Seeds an Attractions layer with public destination locations and source links.
-// Reason: Users requested a layer for NJ attractions such as Wild West City, Waterloo Village, Space Farms, Quiet Valley, and The Land of Make Believe.
+// Timestamp: 2026-06-08T17:21:18-04:00
+// Purpose: Seeds and expands the Attractions layer with public destination locations and source links.
+// Reason: Users requested a broader Attractions layer after noticing major landmarks such as High Point Monument were missing.
 const attractionLocations = [
+  {
+    name: 'High Point Monument',
+    category: 'Monument and Scenic Overlook',
+    town: 'Wantage / Montague',
+    county: 'Sussex',
+    position: [41.3212, -74.6616],
+    note: 'Veterans memorial obelisk at New Jersey’s highest point in High Point State Park.',
+    sourceTitle: 'NJDEP High Point Monument',
+    sourceUrl: 'https://dep.nj.gov/parksandforests/state-park/high-point-monument/'
+  },
   {
     name: 'Wild West City',
     category: 'Theme Park',
@@ -67,6 +77,36 @@ const attractionLocations = [
     sourceUrl: 'https://storybookland.com/'
   },
   {
+    name: 'Barnegat Lighthouse',
+    category: 'Lighthouse',
+    town: 'Barnegat Light',
+    county: 'Ocean',
+    position: [39.7642, -74.1068],
+    note: 'Iconic “Old Barney” lighthouse at the northern tip of Long Beach Island.',
+    sourceTitle: 'NJDEP Barnegat Lighthouse State Park',
+    sourceUrl: 'https://dep.nj.gov/parksandforests/state-park/barnegat-lighthouse-state-park/'
+  },
+  {
+    name: 'Liberty Science Center',
+    category: 'Science Museum',
+    town: 'Jersey City',
+    county: 'Hudson',
+    position: [40.7086, -74.0542],
+    note: 'Large interactive science museum in Liberty State Park.',
+    sourceTitle: 'Liberty Science Center',
+    sourceUrl: 'https://lsc.org/'
+  },
+  {
+    name: 'Battleship New Jersey',
+    category: 'Museum Ship',
+    town: 'Camden',
+    county: 'Camden',
+    position: [39.9396, -75.1322],
+    note: 'Historic Iowa-class battleship museum on the Camden waterfront.',
+    sourceTitle: 'Battleship New Jersey',
+    sourceUrl: 'https://www.battleshipnewjersey.org/'
+  },
+  {
     name: 'Lucy the Elephant',
     category: 'Roadside Oddity',
     town: 'Margate City',
@@ -87,6 +127,36 @@ const attractionLocations = [
     sourceUrl: 'https://www.groundsforsculpture.org/'
   },
   {
+    name: 'Duke Farms',
+    category: 'Estate and Nature Preserve',
+    town: 'Hillsborough',
+    county: 'Somerset',
+    position: [40.7216, -74.7134],
+    note: 'Historic estate, gardens, trails, and conservation landscape.',
+    sourceTitle: 'Duke Farms',
+    sourceUrl: 'https://www.dukefarms.org/'
+  },
+  {
+    name: 'Paterson Great Falls',
+    category: 'Waterfall and National Park',
+    town: 'Paterson',
+    county: 'Passaic',
+    position: [40.9168, -74.1801],
+    note: 'Major Passaic River waterfall and national historical park.',
+    sourceTitle: 'National Park Service Paterson Great Falls',
+    sourceUrl: 'https://www.nps.gov/pagr/index.htm'
+  },
+  {
+    name: 'Thomas Edison National Historical Park',
+    category: 'Historic Site',
+    town: 'West Orange',
+    county: 'Essex',
+    position: [40.7851, -74.2387],
+    note: 'Thomas Edison’s laboratory complex and Glenmont estate.',
+    sourceTitle: 'National Park Service Thomas Edison',
+    sourceUrl: 'https://www.nps.gov/edis/index.htm'
+  },
+  {
     name: 'Diggerland USA',
     category: 'Theme Park',
     town: 'West Berlin',
@@ -105,6 +175,16 @@ const attractionLocations = [
     note: 'Waterfront aquarium on the Camden side of the Delaware River.',
     sourceTitle: 'Adventure Aquarium',
     sourceUrl: 'https://www.adventureaquarium.com/'
+  },
+  {
+    name: 'Cape May Lighthouse',
+    category: 'Lighthouse',
+    town: 'Cape May Point',
+    county: 'Cape May',
+    position: [38.9338, -74.9601],
+    note: 'Historic lighthouse in Cape May Point State Park.',
+    sourceTitle: 'Cape May MAC Cape May Lighthouse',
+    sourceUrl: 'https://capemaymac.org/experience/cape-may-lighthouse/'
   },
   {
     name: 'Sterling Hill Mining Museum',
