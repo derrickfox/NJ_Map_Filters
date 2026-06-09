@@ -310,6 +310,19 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
+   Timestamp: 2026-06-08T18:19:34-04:00
+   Purpose: Adds control, label, and popup styling for the Beaches area layer.
+   Reason: Users requested visible swimmable shoreline coverage, which needs a beach-specific visual language distinct from parks and attractions. */
+.glass-button.active-beach {
+  border-color: #0e7490;
+  background: #0891b2;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(8, 145, 178, 0.3);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
    Timestamp: 2026-06-08T13:49:31-04:00
    Purpose: Adds control and popup styling for the active Rail line layer.
    Reason: Rail infrastructure needs a high-contrast visual treatment that stays legible over counties and basemap tiles. */
@@ -1022,6 +1035,64 @@ body {
 }
 
 .attraction-popup__link:hover {
+  text-decoration: underline;
+}
+
+.beach-label-marker {
+  border: 0;
+  background: transparent;
+}
+
+.beach-label {
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(8, 145, 178, 0.38);
+  border-radius: 999px;
+  background: rgba(255, 251, 235, 0.88);
+  color: #0f766e;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  padding: 4px 7px;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.86);
+  white-space: nowrap;
+}
+
+.beach-popup {
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.beach-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.beach-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.beach-popup__row strong {
+  color: var(--text-primary);
+}
+
+.beach-popup__link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #0e7490;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.beach-popup__link:hover {
   text-decoration: underline;
 }
 

@@ -213,6 +213,30 @@ function MunicipalityLabels({ features, zoom }) {
   });
 }
 
+function BeachLabels({ features }) {
+  return features.map((feature) => {
+    const bounds = L.geoJSON(feature).getBounds();
+    if (!bounds.isValid()) return null;
+    const center = bounds.getCenter();
+    const name = feature?.properties?.name || 'Beach area';
+    const labelIcon = L.divIcon({
+      className: 'beach-label-marker',
+      html: `<span class="beach-label">${escapeHtml(name.replace(/\s+Beaches$/i, ''))}</span>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    });
+
+    return (
+      <Marker
+        key={`beach-label-${name}`}
+        position={[center.lat, center.lng]}
+        icon={labelIcon}
+        interactive={false}
+      />
+    );
+  });
+}
+
 function buildStateMaskPositions(countyData) {
   if (!countyData?.features?.length) return null;
 
@@ -358,6 +382,7 @@ export default function MapArea({
   treeLayerMode,
   treeSpecies,
   attractionLocations,
+  beachAreas,
   weirdNjLocations,
   hiddenCounties,
   selectedCounty,
@@ -597,6 +622,35 @@ export default function MapArea({
   // AI_CHANGE:
   // Tool: Codex
   // Model: GPT-5
+  // Timestamp: 2026-06-08T18:19:34-04:00
+  // Purpose: Styles curated swimmable shoreline polygons for the Beaches area layer.
+  // Reason: Users requested beach coverage as areas along the coast rather than point markers.
+  const beachStyle = {
+    color: '#0891b2',
+    weight: 1.5,
+    opacity: 0.92,
+    fillColor: '#facc15',
+    fillOpacity: 0.38,
+    dashArray: '5 4'
+  };
+
+  const onEachBeach = (feature, layer) => {
+    const properties = feature.properties || {};
+
+    layer.bindPopup(`
+      <div class="beach-popup">
+        <div class="beach-popup__name">${escapeHtml(properties.name || 'Beach area')}</div>
+        <div class="beach-popup__row"><strong>Municipalities:</strong> ${escapeHtml(properties.municipalities || 'Not listed')}</div>
+        <div class="beach-popup__row"><strong>County:</strong> ${escapeHtml(properties.county || 'Not listed')}</div>
+        <div class="beach-popup__row"><strong>Note:</strong> ${escapeHtml(properties.note || 'Public swimming beach area.')}</div>
+        <a class="beach-popup__link" href="${escapeHtml(properties.sourceUrl || '#')}" target="_blank" rel="noreferrer">${escapeHtml(properties.sourceTitle || 'Source')}</a>
+      </div>
+    `);
+  };
+
+  // AI_CHANGE:
+  // Tool: Codex
+  // Model: GPT-5
   // Timestamp: 2026-06-08T13:49:31-04:00
   // Purpose: Styles currently active rail lines as a high-contrast line overlay.
   // Reason: Users requested operating railways, which should read as infrastructure lines rather than points or filled areas.
@@ -790,6 +844,7 @@ export default function MapArea({
 
   const visibleFeatures = visibleCountyData?.features || [];
   const municipalityFeatures = municipalityData?.features || [];
+  const beachFeatures = beachAreas?.features || [];
 
   return (
     <div className="map-stage">
@@ -893,6 +948,23 @@ export default function MapArea({
         )}
         {activeLayers.parks && parkData && (
           <GeoJSON key={`parks-${parkData.features?.length || 0}`} data={parkData} style={parkStyle} onEachFeature={onEachPark} />
+        )}
+        {activeLayers.beaches && beachAreas && (
+          <>
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T18:19:34-04:00
+                Purpose: Renders swimmable beach shoreline zones as area polygons.
+                Reason: Users requested a Beaches layer that highlights coastline sections where public swimming is available. */}
+            <GeoJSON
+              key={`beaches-${beachFeatures.length}`}
+              data={beachAreas}
+              style={beachStyle}
+              onEachFeature={onEachBeach}
+            />
+            <BeachLabels features={beachFeatures} />
+          </>
         )}
         {activeLayers.municipalities && municipalityData && (
           <>

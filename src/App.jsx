@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import MapArea from './components/MapArea.jsx';
 import LayerControls from './components/LayerControls.jsx';
 import attractionLocations from './data/attractionLocations.js';
+import beachAreas from './data/beachAreas.js';
 import borderHistoricCanals from './data/borderHistoricCanals.js';
 import weirdNjLocations from './data/weirdNjLocations.js';
 
@@ -80,6 +81,7 @@ function App() {
     canals: false,
     parks: false,
     municipalities: false,
+    beaches: false,
     weirdNj: false,
     attractions: false,
     rail: false,
@@ -509,6 +511,7 @@ function App() {
         treeLayerMode={treeLayerMode}
         treeSpecies={treeSpecies}
         attractionLocations={attractionLocations}
+        beachAreas={beachAreas}
         weirdNjLocations={weirdNjLocations}
         hiddenCounties={hiddenCounties}
         selectedCounty={selectedCounty}
@@ -556,6 +559,7 @@ function App() {
         treeSpecies={treeSpecies}
         setTreeSpecies={setTreeSpecies}
         attractionLocations={attractionLocations}
+        beachAreas={beachAreas}
         weirdNjLocations={weirdNjLocations}
         baseMap={baseMap}
         setBaseMap={setBaseMap}

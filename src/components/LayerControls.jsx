@@ -15,6 +15,7 @@ import {
   Search,
   TreePine,
   Train,
+  Umbrella,
   Waves,
   X
 } from 'lucide-react';
@@ -66,6 +67,7 @@ export default function LayerControls({
   treeSpecies,
   setTreeSpecies,
   attractionLocations = [],
+  beachAreas,
   weirdNjLocations = [],
   baseMap = 'plain',
   setBaseMap
@@ -107,6 +109,7 @@ export default function LayerControls({
   const historicalSiteCount = historicalSiteData?.features?.length || 0;
   const treeRegionCount = treeLandCoverData?.features?.length || 0;
   const attractionCount = attractionLocations.length;
+  const beachCount = beachAreas?.features?.length || 0;
   const weirdNjCount = weirdNjLocations.length;
 
   return (
@@ -198,6 +201,31 @@ export default function LayerControls({
               >
                 Terrain
               </button>
+            </div>
+          </section>
+
+          <section className="layer-group">
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T18:19:34-04:00
+                Purpose: Adds a Beaches area layer toggle for swimmable shoreline zones.
+                Reason: Users requested an area layer highlighting coastline sections where people can actually swim. */}
+            <button
+              type="button"
+              className={`glass-button layer-toggle ${activeLayers.beaches ? 'active-beach' : ''}`}
+              onClick={() => toggleLayer('beaches')}
+            >
+              <span>
+                <Umbrella size={18} color={activeLayers.beaches ? '#ffffff' : '#0e7490'} />
+                Beaches
+              </span>
+            </button>
+
+            <div className="layer-summary">
+              {activeLayers.beaches
+                ? `${beachCount} swimming beach areas visible`
+                : 'Swimmable public beach shoreline zones'}
             </div>
           </section>
 
