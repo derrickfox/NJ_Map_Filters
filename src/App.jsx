@@ -4,6 +4,7 @@ import LayerControls from './components/LayerControls.jsx';
 import attractionLocations from './data/attractionLocations.js';
 import beachAreas from './data/beachAreas.js';
 import borderHistoricCanals from './data/borderHistoricCanals.js';
+import highwayLines from './data/highwayLines.js';
 import weirdNjLocations from './data/weirdNjLocations.js';
 
 const COUNTY_LAYER_URL =
@@ -84,6 +85,7 @@ function App() {
     beaches: false,
     weirdNj: false,
     attractions: false,
+    highways: false,
     rail: false,
     historicalSites: false,
     trees: false
@@ -512,6 +514,7 @@ function App() {
         treeSpecies={treeSpecies}
         attractionLocations={attractionLocations}
         beachAreas={beachAreas}
+        highwayLines={highwayLines}
         weirdNjLocations={weirdNjLocations}
         hiddenCounties={hiddenCounties}
         selectedCounty={selectedCounty}
@@ -560,6 +563,7 @@ function App() {
         setTreeSpecies={setTreeSpecies}
         attractionLocations={attractionLocations}
         beachAreas={beachAreas}
+        highwayLines={highwayLines}
         weirdNjLocations={weirdNjLocations}
         baseMap={baseMap}
         setBaseMap={setBaseMap}

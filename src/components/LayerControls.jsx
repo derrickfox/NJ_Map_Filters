@@ -12,6 +12,7 @@ import {
   Layers,
   Map,
   Mountain,
+  Route,
   Search,
   TreePine,
   Train,
@@ -68,6 +69,7 @@ export default function LayerControls({
   setTreeSpecies,
   attractionLocations = [],
   beachAreas,
+  highwayLines,
   weirdNjLocations = [],
   baseMap = 'plain',
   setBaseMap
@@ -110,6 +112,7 @@ export default function LayerControls({
   const treeRegionCount = treeLandCoverData?.features?.length || 0;
   const attractionCount = attractionLocations.length;
   const beachCount = beachAreas?.features?.length || 0;
+  const highwayCount = highwayLines?.features?.length || 0;
   const weirdNjCount = weirdNjLocations.length;
 
   return (
@@ -483,6 +486,31 @@ export default function LayerControls({
               {activeLayers.beaches
                 ? `${beachCount} swimming beach areas visible`
                 : 'Swimmable public beach shoreline zones'}
+            </div>
+          </section>
+
+          <section className="layer-group">
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T19:03:42-04:00
+                Purpose: Adds a Highways layer toggle in the transportation section.
+                Reason: Users requested major highway corridors, including Old Mine Road, as a dedicated layer. */}
+            <button
+              type="button"
+              className={`glass-button layer-toggle ${activeLayers.highways ? 'active-highway' : ''}`}
+              onClick={() => toggleLayer('highways')}
+            >
+              <span>
+                <Route size={18} color={activeLayers.highways ? '#ffffff' : '#c2410c'} />
+                Highways
+              </span>
+            </button>
+
+            <div className="layer-summary">
+              {activeLayers.highways
+                ? `${highwayCount} major highway corridors visible`
+                : 'Major roads and Old Mine Road'}
             </div>
           </section>
 

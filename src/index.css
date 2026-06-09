@@ -323,6 +323,19 @@ body {
 /* AI_CHANGE:
    Tool: Codex
    Model: GPT-5
+   Timestamp: 2026-06-08T19:03:42-04:00
+   Purpose: Adds control and popup styling for the Highways line layer.
+   Reason: Major road corridors need a warm road color that stays distinct from rail, canals, and county boundaries. */
+.glass-button.active-highway {
+  border-color: #9a3412;
+  background: #c2410c;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(194, 65, 12, 0.3);
+}
+
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
    Timestamp: 2026-06-08T13:49:31-04:00
    Purpose: Adds control and popup styling for the active Rail line layer.
    Reason: Rail infrastructure needs a high-contrast visual treatment that stays legible over counties and basemap tiles. */
@@ -872,6 +885,42 @@ body {
 
 .rail-popup__row strong {
   color: var(--text-primary);
+}
+
+.highway-popup {
+  min-width: 210px;
+  max-width: 280px;
+}
+
+.highway-popup__name {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.highway-popup__row {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.highway-popup__row strong {
+  color: var(--text-primary);
+}
+
+.highway-popup__link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.highway-popup__link:hover {
+  text-decoration: underline;
 }
 
 .historical-site-popup {

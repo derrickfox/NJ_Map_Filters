@@ -383,6 +383,7 @@ export default function MapArea({
   treeSpecies,
   attractionLocations,
   beachAreas,
+  highwayLines,
   weirdNjLocations,
   hiddenCounties,
   selectedCounty,
@@ -675,6 +676,48 @@ export default function MapArea({
         <div class="rail-popup__row"><strong>Status:</strong> Active</div>
         <div class="rail-popup__row"><strong>Rail ID:</strong> ${formatCanalValue(properties.RR_ID)}</div>
         <div class="rail-popup__row"><strong>Mileposts:</strong> ${formatCanalValue(milepostRange)}</div>
+      </div>
+    `);
+  };
+
+  // AI_CHANGE:
+  // Tool: Codex
+  // Model: GPT-5
+  // Timestamp: 2026-06-08T19:03:42-04:00
+  // Purpose: Styles major highway corridors, with Old Mine Road differentiated as a historic/scenic road.
+  // Reason: Users requested a Highways layer that includes Old Mine Road alongside modern major highways.
+  const highwayStyle = (feature) => {
+    const isOldMineRoad = feature?.properties?.name === 'Old Mine Road';
+
+    return {
+      color: isOldMineRoad ? '#7c2d12' : '#ea580c',
+      weight: isOldMineRoad ? 3 : 3.6,
+      opacity: 0.94,
+      dashArray: isOldMineRoad ? '7 5' : null
+    };
+  };
+
+  const highwayCasingStyle = (feature) => {
+    const isOldMineRoad = feature?.properties?.name === 'Old Mine Road';
+
+    return {
+      color: isOldMineRoad ? '#fde68a' : '#fff7ed',
+      weight: isOldMineRoad ? 5.6 : 6.6,
+      opacity: 0.78,
+      dashArray: isOldMineRoad ? '7 5' : null
+    };
+  };
+
+  const onEachHighway = (feature, layer) => {
+    const properties = feature.properties || {};
+
+    layer.bindPopup(`
+      <div class="highway-popup">
+        <div class="highway-popup__name">${escapeHtml(properties.name || 'Highway corridor')}</div>
+        <div class="highway-popup__row"><strong>Route:</strong> ${escapeHtml(properties.route || 'Not listed')}</div>
+        <div class="highway-popup__row"><strong>Type:</strong> ${escapeHtml(properties.kind || 'Not listed')}</div>
+        <div class="highway-popup__row"><strong>Note:</strong> ${escapeHtml(properties.note || 'Approximate highway corridor.')}</div>
+        <a class="highway-popup__link" href="${escapeHtml(properties.sourceUrl || '#')}" target="_blank" rel="noreferrer">${escapeHtml(properties.sourceTitle || 'Source')}</a>
       </div>
     `);
   };
@@ -996,6 +1039,28 @@ export default function MapArea({
             style={railStyle}
             onEachFeature={onEachRail}
           />
+        )}
+        {activeLayers.highways && highwayLines && (
+          <>
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T19:03:42-04:00
+                Purpose: Renders major highway corridors as cased linework.
+                Reason: Highways should remain legible over county, terrain, and outdoor-area overlays. */}
+            <GeoJSON
+              key={`highway-casing-${highwayLines.features?.length || 0}`}
+              data={highwayLines}
+              style={highwayCasingStyle}
+              interactive={false}
+            />
+            <GeoJSON
+              key={`highways-${highwayLines.features?.length || 0}`}
+              data={highwayLines}
+              style={highwayStyle}
+              onEachFeature={onEachHighway}
+            />
+          </>
         )}
         {/* AI_CHANGE:
             Tool: Codex
