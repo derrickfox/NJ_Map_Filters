@@ -77,6 +77,21 @@ const MUNICIPALITY_COLORS = [
   '#0ea5e9'
 ];
 
+// AI_CHANGE:
+// Tool: Codex
+// Model: GPT-5
+// Timestamp: 2026-06-08T19:44:16-04:00
+// Purpose: Defines the user-facing color legend for the Highways layer.
+// Reason: Highway route colors encode different road families, so users need a visible key when the layer is enabled.
+const HIGHWAY_LEGEND_ITEMS = [
+  { key: 'turnpike', label: 'New Jersey Turnpike', color: '#7c3aed', weight: 5 },
+  { key: 'parkway', label: 'Garden State Parkway', color: '#16a34a', weight: 5 },
+  { key: 'interstate', label: 'Interstates', color: '#dc2626', weight: 4 },
+  { key: 'us', label: 'U.S. routes', color: '#2563eb', weight: 4 },
+  { key: 'nj', label: 'NJ routes', color: '#ea580c', weight: 4 },
+  { key: 'oldMine', label: 'Old Mine Road', color: '#7c2d12', weight: 3, dashed: true }
+];
+
 function getCountyName(feature) {
   return (
     feature?.properties?.COUNTY ||
@@ -395,6 +410,7 @@ export default function MapArea({
 }) {
   const geoJsonLayerRef = useRef(null);
   const [mapZoom, setMapZoom] = useState(8);
+  const [selectedHighwayKey, setSelectedHighwayKey] = useState(null);
   const selectedBaseMap = BASEMAPS[baseMap] || BASEMAPS.plain;
 
   // AI_CHANGE:
@@ -688,11 +704,13 @@ export default function MapArea({
   // Reason: Users requested better road alignment plus distinct colors for the Garden State Parkway and New Jersey Turnpike.
   const highwayStyle = (feature) => {
     const properties = feature?.properties || {};
+    const isSelected = properties.key === selectedHighwayKey;
+    const isMainArtery = properties.key === 'turnpike' || properties.key === 'parkway';
 
     return {
-      color: properties.color || '#ea580c',
-      weight: properties.key === 'oldMine' ? 3 : 3.6,
-      opacity: 0.94,
+      color: isSelected ? '#facc15' : properties.color || '#ea580c',
+      weight: (properties.key === 'oldMine' ? 3 : isMainArtery ? 5.4 : 3.6) + (isSelected ? 2.2 : 0),
+      opacity: isSelected ? 1 : 0.94,
       dashArray: properties.dashArray || null
     };
   };
@@ -700,17 +718,38 @@ export default function MapArea({
   const highwayCasingStyle = (feature) => {
     const key = feature?.properties?.key;
     const isOldMineRoad = key === 'oldMine';
+    const isMainArtery = key === 'turnpike' || key === 'parkway';
+    const isSelected = key === selectedHighwayKey;
 
     return {
-      color: isOldMineRoad ? '#fde68a' : key === 'turnpike' ? '#ede9fe' : key === 'parkway' ? '#dcfce7' : '#fff7ed',
-      weight: isOldMineRoad ? 5.6 : 6.6,
-      opacity: 0.78,
+      color: isSelected ? '#111827' : isOldMineRoad ? '#fde68a' : key === 'turnpike' ? '#ede9fe' : key === 'parkway' ? '#dcfce7' : '#fff7ed',
+      weight: (isOldMineRoad ? 5.6 : isMainArtery ? 8.8 : 6.6) + (isSelected ? 2.8 : 0),
+      opacity: isSelected ? 0.9 : 0.78,
       dashArray: feature?.properties?.dashArray || null
     };
   };
 
+  // AI_CHANGE:
+  // Tool: Codex
+  // Model: GPT-5
+  // Timestamp: 2026-06-08T19:44:16-04:00
+  // Purpose: Adds a nearly invisible wide click target for highway selection.
+  // Reason: Accurate OSM highway strokes are thin, and users should not need to click a perfect pixel to highlight a route.
+  const highwayHitStyle = {
+    color: '#ffffff',
+    weight: 16,
+    opacity: 0.01
+  };
+
   const onEachHighway = (feature, layer) => {
     const properties = feature.properties || {};
+
+    layer.on({
+      click: (event) => {
+        setSelectedHighwayKey(properties.key || null);
+        event.target.bringToFront();
+      }
+    });
 
     layer.bindPopup(`
       <div class="highway-popup">
@@ -768,6 +807,11 @@ export default function MapArea({
 
     return Object.entries(abundanceScale).map(([key, definition]) => ({ key, ...definition }));
   }, [treeLandCoverData, treeLayerMode]);
+
+  const selectedHighway = useMemo(() => {
+    if (!selectedHighwayKey || !highwayLines?.features?.length) return null;
+    return highwayLines.features.find((feature) => feature.properties?.key === selectedHighwayKey)?.properties || null;
+  }, [highwayLines, selectedHighwayKey]);
 
   const treeStyle = (feature) => {
     const properties = feature.properties || {};
@@ -1050,15 +1094,21 @@ export default function MapArea({
                 Purpose: Renders major highway corridors as cased linework.
                 Reason: Highways should remain legible over county, terrain, and outdoor-area overlays. */}
             <GeoJSON
-              key={`highway-casing-${highwayLines.features?.length || 0}`}
+              key={`highway-casing-${highwayLines.features?.length || 0}-${selectedHighwayKey || 'none'}`}
               data={highwayLines}
               style={highwayCasingStyle}
               interactive={false}
             />
             <GeoJSON
-              key={`highways-${highwayLines.features?.length || 0}`}
+              key={`highways-${highwayLines.features?.length || 0}-${selectedHighwayKey || 'none'}`}
               data={highwayLines}
               style={highwayStyle}
+              onEachFeature={onEachHighway}
+            />
+            <GeoJSON
+              key={`highway-hit-${highwayLines.features?.length || 0}-${selectedHighwayKey || 'none'}`}
+              data={highwayLines}
+              style={highwayHitStyle}
               onEachFeature={onEachHighway}
             />
           </>
@@ -1215,6 +1265,35 @@ export default function MapArea({
             {treeLegendItems.map((item) => (
               <div className="tree-legend__item" key={item.key}>
                 <span className="tree-legend__swatch" style={{ backgroundColor: item.color }} />
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeLayers.highways && (
+        <div className={`highway-legend glass-panel ${activeLayers.trees ? 'highway-legend--stacked' : ''}`} aria-label="Highways legend">
+          {/* AI_CHANGE:
+              Tool: Codex
+              Model: GPT-5
+              Timestamp: 2026-06-08T19:44:16-04:00
+              Purpose: Shows a Highways color legend and selected-route state on the map.
+              Reason: Users need to understand route colors and see clear feedback after clicking a highway. */}
+          <div className="highway-legend__heading">
+            <span>Highways</span>
+            <strong>{selectedHighway ? selectedHighway.name : 'Route Colors'}</strong>
+          </div>
+          <div className="highway-legend__hint">
+            {selectedHighway ? 'Selected route highlighted in yellow' : 'Click any highway to highlight it'}
+          </div>
+          <div className="highway-legend__items">
+            {HIGHWAY_LEGEND_ITEMS.map((item) => (
+              <div className="highway-legend__item" key={item.key}>
+                <span
+                  className={`highway-legend__line ${item.dashed ? 'is-dashed' : ''}`}
+                  style={{ '--line-color': item.color, '--line-height': `${item.weight}px` }}
+                />
                 <span>{item.label}</span>
               </div>
             ))}

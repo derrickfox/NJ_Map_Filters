@@ -1051,6 +1051,109 @@ body {
   border-radius: 4px;
 }
 
+/* AI_CHANGE:
+   Tool: Codex
+   Model: GPT-5
+   Timestamp: 2026-06-08T19:44:16-04:00
+   Purpose: Adds the floating Highways legend and line swatches.
+   Reason: Users need to decode highway route colors and understand click-to-highlight feedback. */
+.highway-legend {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  z-index: 860;
+  width: min(286px, calc(100vw - 48px));
+  padding: 14px;
+}
+
+.highway-legend--stacked {
+  bottom: 250px;
+}
+
+.highway-legend__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.highway-legend__heading span {
+  color: #c2410c;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.highway-legend__heading strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.highway-legend__hint {
+  border-radius: 7px;
+  background: rgba(255, 247, 237, 0.86);
+  color: #9a3412;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  padding: 7px 8px;
+}
+
+.highway-legend__items {
+  display: grid;
+  gap: 7px;
+}
+
+.highway-legend__item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.highway-legend__line {
+  position: relative;
+  display: block;
+  height: 12px;
+}
+
+.highway-legend__line::before,
+.highway-legend__line::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 50%;
+  content: '';
+  transform: translateY(-50%);
+}
+
+.highway-legend__line::before {
+  height: calc(var(--line-height) + 3px);
+  border-radius: 999px;
+  background: #fff7ed;
+}
+
+.highway-legend__line::after {
+  height: var(--line-height);
+  border-radius: 999px;
+  background: var(--line-color);
+}
+
+.highway-legend__line.is-dashed::after {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--line-color) 0,
+    var(--line-color) 7px,
+    transparent 7px,
+    transparent 12px
+  );
+}
+
 .attraction-popup {
   min-width: 210px;
   max-width: 260px;
