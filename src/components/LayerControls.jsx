@@ -208,31 +208,6 @@ export default function LayerControls({
             {/* AI_CHANGE:
                 Tool: Codex
                 Model: GPT-5
-                Timestamp: 2026-06-08T18:19:34-04:00
-                Purpose: Adds a Beaches area layer toggle for swimmable shoreline zones.
-                Reason: Users requested an area layer highlighting coastline sections where people can actually swim. */}
-            <button
-              type="button"
-              className={`glass-button layer-toggle ${activeLayers.beaches ? 'active-beach' : ''}`}
-              onClick={() => toggleLayer('beaches')}
-            >
-              <span>
-                <Umbrella size={18} color={activeLayers.beaches ? '#ffffff' : '#0e7490'} />
-                Beaches
-              </span>
-            </button>
-
-            <div className="layer-summary">
-              {activeLayers.beaches
-                ? `${beachCount} swimming beach areas visible`
-                : 'Swimmable public beach shoreline zones'}
-            </div>
-          </section>
-
-          <section className="layer-group">
-            {/* AI_CHANGE:
-                Tool: Codex
-                Model: GPT-5
                 Timestamp: 2026-06-08T15:01:23-04:00
                 Purpose: Adds a High Relief terrain overlay control near the basemap chooser.
                 Reason: Users requested an extreme shaded terrain layer that can be toggled independently from the plain and terrain basemaps. */}
@@ -353,6 +328,35 @@ export default function LayerControls({
             {/* AI_CHANGE:
                 Tool: Codex
                 Model: GPT-5
+                Timestamp: 2026-06-08T18:46:24-04:00
+                Purpose: Reorders the Towns & Cities control directly after Counties.
+                Reason: Municipal boundaries are the next most logical administrative layer after county boundaries. */}
+            <button
+              type="button"
+              className={`glass-button layer-toggle ${activeLayers.municipalities ? 'active-purple' : ''}`}
+              onClick={() => toggleLayer('municipalities')}
+            >
+              <span>
+                <Building2 size={18} color={activeLayers.municipalities ? '#ffffff' : '#7c3aed'} />
+                Towns & Cities
+              </span>
+            </button>
+
+            <div className="layer-summary">
+              {activeLayers.municipalities
+                ? municipalityData
+                  ? `${municipalityCount} municipal areas visible`
+                  : 'Loading municipal areas...'
+                : 'NJ municipal boundary areas'}
+            </div>
+
+            {municipalityError && <div className="status-message status-message--error">{municipalityError}</div>}
+          </section>
+
+          <section className="layer-group">
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
                 Timestamp: 2026-06-08T14:21:42-04:00
                 Purpose: Adds controls for the Forest Composition layer group.
                 Reason: Users requested switchable forest type, dominant species, and species abundance views with a species picker. */}
@@ -432,29 +436,54 @@ export default function LayerControls({
             {/* AI_CHANGE:
                 Tool: Codex
                 Model: GPT-5
-                Timestamp: 2026-06-08T14:10:54-04:00
-                Purpose: Adds a Historical Sites layer toggle for listed/NHL NJDEP historic property site features.
-                Reason: Users requested a statewide Historical Sites layer, and the panel needs loading/count feedback for the official dataset. */}
+                Timestamp: 2026-06-08T18:46:24-04:00
+                Purpose: Places Parks in the natural area portion of the layer list.
+                Reason: Public open-space polygons fit best after forest composition and before shoreline recreation overlays. */}
             <button
               type="button"
-              className={`glass-button layer-toggle ${activeLayers.historicalSites ? 'active-red' : ''}`}
-              onClick={() => toggleLayer('historicalSites')}
+              className={`glass-button layer-toggle ${activeLayers.parks ? 'active-green' : ''}`}
+              onClick={() => toggleLayer('parks')}
             >
               <span>
-                <Landmark size={18} color={activeLayers.historicalSites ? '#ffffff' : '#b91c1c'} />
-                Historical Sites
+                <TreePine size={18} color={activeLayers.parks ? '#ffffff' : '#16a34a'} />
+                Parks
               </span>
             </button>
 
             <div className="layer-summary">
-              {activeLayers.historicalSites
-                ? historicalSiteData
-                  ? `${historicalSiteCount} listed historical sites visible`
-                  : 'Loading historical sites...'
-                : 'Listed and landmark historic sites'}
+              {activeLayers.parks
+                ? parkData
+                  ? `${parkCount} park and open-space areas visible`
+                  : 'Loading park areas...'
+                : 'NJDEP park and open-space areas'}
             </div>
 
-            {historicalSiteError && <div className="status-message status-message--error">{historicalSiteError}</div>}
+            {parkError && <div className="status-message status-message--error">{parkError}</div>}
+          </section>
+
+          <section className="layer-group">
+            {/* AI_CHANGE:
+                Tool: Codex
+                Model: GPT-5
+                Timestamp: 2026-06-08T18:46:24-04:00
+                Purpose: Places Beaches near other outdoor area overlays in the layer list.
+                Reason: Swimmable shoreline zones are more logically grouped with parks and natural-use areas than with terrain controls. */}
+            <button
+              type="button"
+              className={`glass-button layer-toggle ${activeLayers.beaches ? 'active-beach' : ''}`}
+              onClick={() => toggleLayer('beaches')}
+            >
+              <span>
+                <Umbrella size={18} color={activeLayers.beaches ? '#ffffff' : '#0e7490'} />
+                Beaches
+              </span>
+            </button>
+
+            <div className="layer-summary">
+              {activeLayers.beaches
+                ? `${beachCount} swimming beach areas visible`
+                : 'Swimmable public beach shoreline zones'}
+            </div>
           </section>
 
           <section className="layer-group">
@@ -484,31 +513,6 @@ export default function LayerControls({
             </div>
 
             {railError && <div className="status-message status-message--error">{railError}</div>}
-          </section>
-
-          <section className="layer-group">
-            {/* AI_CHANGE:
-                Tool: Codex
-                Model: GPT-5
-                Timestamp: 2026-06-08T13:40:16-04:00
-                Purpose: Adds an Attractions layer toggle for source-linked destination markers.
-                Reason: Users requested a map layer for NJ attractions including Wild West City, Waterloo Village, Space Farms, and The Land of Make Believe. */}
-            <button
-              type="button"
-              className={`glass-button layer-toggle ${activeLayers.attractions ? 'active-yellow' : ''}`}
-              onClick={() => toggleLayer('attractions')}
-            >
-              <span>
-                <FerrisWheel size={18} color={activeLayers.attractions ? '#ffffff' : '#a16207'} />
-                Attractions
-              </span>
-            </button>
-
-            <div className="layer-summary">
-              {activeLayers.attractions
-                ? `${attractionCount} attractions visible`
-                : 'Classic NJ and regional attractions'}
-            </div>
           </section>
 
           <section className="layer-group">
@@ -622,58 +626,54 @@ export default function LayerControls({
             {/* AI_CHANGE:
                 Tool: Codex
                 Model: GPT-5
-                Timestamp: 2026-06-08T13:11:52-04:00
-                Purpose: Adds a Parks layer toggle for NJDEP open-space area polygons.
-                Reason: Users requested park coverage as an area overlay rather than pinpoint locations. */}
+                Timestamp: 2026-06-08T18:46:24-04:00
+                Purpose: Moves Historical Sites after corridor/history infrastructure layers.
+                Reason: The layer list now flows from boundaries and landscape layers into transportation/water corridors and then historic destinations. */}
             <button
               type="button"
-              className={`glass-button layer-toggle ${activeLayers.parks ? 'active-green' : ''}`}
-              onClick={() => toggleLayer('parks')}
+              className={`glass-button layer-toggle ${activeLayers.historicalSites ? 'active-red' : ''}`}
+              onClick={() => toggleLayer('historicalSites')}
             >
               <span>
-                <TreePine size={18} color={activeLayers.parks ? '#ffffff' : '#16a34a'} />
-                Parks
+                <Landmark size={18} color={activeLayers.historicalSites ? '#ffffff' : '#b91c1c'} />
+                Historical Sites
               </span>
             </button>
 
             <div className="layer-summary">
-              {activeLayers.parks
-                ? parkData
-                  ? `${parkCount} park and open-space areas visible`
-                  : 'Loading park areas...'
-                : 'NJDEP park and open-space areas'}
+              {activeLayers.historicalSites
+                ? historicalSiteData
+                  ? `${historicalSiteCount} listed historical sites visible`
+                  : 'Loading historical sites...'
+                : 'Listed and landmark historic sites'}
             </div>
 
-            {parkError && <div className="status-message status-message--error">{parkError}</div>}
+            {historicalSiteError && <div className="status-message status-message--error">{historicalSiteError}</div>}
           </section>
 
           <section className="layer-group">
             {/* AI_CHANGE:
                 Tool: Codex
                 Model: GPT-5
-                Timestamp: 2026-06-08T13:17:49-04:00
-                Purpose: Adds a Towns & Cities layer toggle for NJ municipal boundary polygons.
-                Reason: Users requested another area layer that shows municipal coverage across New Jersey. */}
+                Timestamp: 2026-06-08T18:46:24-04:00
+                Purpose: Moves Attractions into the destination portion of the layer list.
+                Reason: Attractions are point-of-interest style content and read best after historic-site overlays. */}
             <button
               type="button"
-              className={`glass-button layer-toggle ${activeLayers.municipalities ? 'active-purple' : ''}`}
-              onClick={() => toggleLayer('municipalities')}
+              className={`glass-button layer-toggle ${activeLayers.attractions ? 'active-yellow' : ''}`}
+              onClick={() => toggleLayer('attractions')}
             >
               <span>
-                <Building2 size={18} color={activeLayers.municipalities ? '#ffffff' : '#7c3aed'} />
-                Towns & Cities
+                <FerrisWheel size={18} color={activeLayers.attractions ? '#ffffff' : '#a16207'} />
+                Attractions
               </span>
             </button>
 
             <div className="layer-summary">
-              {activeLayers.municipalities
-                ? municipalityData
-                  ? `${municipalityCount} municipal areas visible`
-                  : 'Loading municipal areas...'
-                : 'NJ municipal boundary areas'}
+              {activeLayers.attractions
+                ? `${attractionCount} attractions visible`
+                : 'Classic NJ and regional attractions'}
             </div>
-
-            {municipalityError && <div className="status-message status-message--error">{municipalityError}</div>}
           </section>
 
           <section className="layer-group">
