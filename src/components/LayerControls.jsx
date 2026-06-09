@@ -57,6 +57,7 @@ export default function LayerControls({
   parkError,
   municipalityData,
   municipalityError,
+  highwayError,
   railData,
   railError,
   historicalSiteData,
@@ -509,9 +510,13 @@ export default function LayerControls({
 
             <div className="layer-summary">
               {activeLayers.highways
-                ? `${highwayCount} major highway corridors visible`
+                ? highwayLines
+                  ? `${highwayCount} major highway corridors visible`
+                  : 'Loading major highway corridors...'
                 : 'Major roads and Old Mine Road'}
             </div>
+
+            {highwayError && <div className="status-message status-message--error">{highwayError}</div>}
           </section>
 
           <section className="layer-group">

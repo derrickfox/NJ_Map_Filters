@@ -683,28 +683,29 @@ export default function MapArea({
   // AI_CHANGE:
   // Tool: Codex
   // Model: GPT-5
-  // Timestamp: 2026-06-08T19:03:42-04:00
-  // Purpose: Styles major highway corridors, with Old Mine Road differentiated as a historic/scenic road.
-  // Reason: Users requested a Highways layer that includes Old Mine Road alongside modern major highways.
+  // Timestamp: 2026-06-08T19:18:37-04:00
+  // Purpose: Styles OSM-derived highway corridors with route-level colors and Old Mine Road as a historic/scenic road.
+  // Reason: Users requested better road alignment plus distinct colors for the Garden State Parkway and New Jersey Turnpike.
   const highwayStyle = (feature) => {
-    const isOldMineRoad = feature?.properties?.name === 'Old Mine Road';
+    const properties = feature?.properties || {};
 
     return {
-      color: isOldMineRoad ? '#7c2d12' : '#ea580c',
-      weight: isOldMineRoad ? 3 : 3.6,
+      color: properties.color || '#ea580c',
+      weight: properties.key === 'oldMine' ? 3 : 3.6,
       opacity: 0.94,
-      dashArray: isOldMineRoad ? '7 5' : null
+      dashArray: properties.dashArray || null
     };
   };
 
   const highwayCasingStyle = (feature) => {
-    const isOldMineRoad = feature?.properties?.name === 'Old Mine Road';
+    const key = feature?.properties?.key;
+    const isOldMineRoad = key === 'oldMine';
 
     return {
-      color: isOldMineRoad ? '#fde68a' : '#fff7ed',
+      color: isOldMineRoad ? '#fde68a' : key === 'turnpike' ? '#ede9fe' : key === 'parkway' ? '#dcfce7' : '#fff7ed',
       weight: isOldMineRoad ? 5.6 : 6.6,
       opacity: 0.78,
-      dashArray: isOldMineRoad ? '7 5' : null
+      dashArray: feature?.properties?.dashArray || null
     };
   };
 

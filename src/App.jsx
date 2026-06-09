@@ -4,7 +4,6 @@ import LayerControls from './components/LayerControls.jsx';
 import attractionLocations from './data/attractionLocations.js';
 import beachAreas from './data/beachAreas.js';
 import borderHistoricCanals from './data/borderHistoricCanals.js';
-import highwayLines from './data/highwayLines.js';
 import weirdNjLocations from './data/weirdNjLocations.js';
 
 const COUNTY_LAYER_URL =
@@ -102,6 +101,8 @@ function App() {
   const [municipalityError, setMunicipalityError] = useState('');
   const [railData, setRailData] = useState(null);
   const [railError, setRailError] = useState('');
+  const [highwayLines, setHighwayLines] = useState(null);
+  const [highwayError, setHighwayError] = useState('');
   const [historicalSiteData, setHistoricalSiteData] = useState(null);
   const [historicalSiteError, setHistoricalSiteError] = useState('');
   const [treeLandCoverData, setTreeLandCoverData] = useState(null);
@@ -331,6 +332,34 @@ function App() {
   }, [activeLayers.rail, railData, railError]);
 
   useEffect(() => {
+    if (!activeLayers.highways || highwayLines || highwayError) return;
+    let isMounted = true;
+
+    // AI_CHANGE:
+    // Tool: Codex
+    // Model: GPT-5
+    // Timestamp: 2026-06-08T19:18:37-04:00
+    // Purpose: Lazy-loads the heavier OSM-derived highway geometry only when the Highways layer is enabled.
+    // Reason: Accurate road-following linework is larger than hand-drawn sketches, so it should not bloat the initial app bundle.
+    import('./data/highwayLines.js')
+      .then((module) => {
+        if (!isMounted) return;
+        setHighwayLines(module.default);
+        setHighwayError('');
+      })
+      .catch((error) => {
+        console.error('Error loading New Jersey highway data:', error);
+        if (isMounted) {
+          setHighwayError(error.message || 'Highways data could not be loaded.');
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeLayers.highways, highwayLines, highwayError]);
+
+  useEffect(() => {
     if (!activeLayers.historicalSites || historicalSiteData || historicalSiteError) return;
     let isMounted = true;
 
@@ -421,6 +450,7 @@ function App() {
     }
     if (activeLayers.parks && !parkData && !parkError) layers.push('Parks');
     if (activeLayers.municipalities && !municipalityData && !municipalityError) layers.push('Towns & Cities');
+    if (activeLayers.highways && !highwayLines && !highwayError) layers.push('Highways');
     if (activeLayers.rail && !railData && !railError) layers.push('Rail');
     if (activeLayers.historicalSites && !historicalSiteData && !historicalSiteError) layers.push('Historical Sites');
     if (activeLayers.trees && !treeLandCoverData && !treeLandCoverError) layers.push('Forest Composition');
@@ -437,6 +467,8 @@ function App() {
     historicalSiteError,
     municipalityData,
     municipalityError,
+    highwayError,
+    highwayLines,
     parkData,
     parkError,
     railData,
@@ -508,13 +540,13 @@ function App() {
         parkData={parkData}
         municipalityData={municipalityData}
         railData={railData}
+        highwayLines={highwayLines}
         historicalSiteData={historicalSiteData}
         treeLandCoverData={treeLandCoverData}
         treeLayerMode={treeLayerMode}
         treeSpecies={treeSpecies}
         attractionLocations={attractionLocations}
         beachAreas={beachAreas}
-        highwayLines={highwayLines}
         weirdNjLocations={weirdNjLocations}
         hiddenCounties={hiddenCounties}
         selectedCounty={selectedCounty}
@@ -551,6 +583,8 @@ function App() {
         parkError={parkError}
         municipalityData={municipalityData}
         municipalityError={municipalityError}
+        highwayLines={highwayLines}
+        highwayError={highwayError}
         railData={railData}
         railError={railError}
         historicalSiteData={historicalSiteData}
@@ -563,7 +597,6 @@ function App() {
         setTreeSpecies={setTreeSpecies}
         attractionLocations={attractionLocations}
         beachAreas={beachAreas}
-        highwayLines={highwayLines}
         weirdNjLocations={weirdNjLocations}
         baseMap={baseMap}
         setBaseMap={setBaseMap}
