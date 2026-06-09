@@ -854,7 +854,13 @@ export default function MapArea({
         minZoom={7}
         maxZoom={15}
         zoomSnap={0.05}
-        zoomDelta={0.25}
+        // AI_CHANGE:
+        // Tool: Codex
+        // Model: GPT-5
+        // Timestamp: 2026-06-08T18:38:52-04:00
+        // Purpose: Makes zoom widget clicks move one full zoom level.
+        // Reason: The quarter-step zoom felt too slow when using the visible +/- control.
+        zoomDelta={1}
         zoomControl={false}
         maxBoundsViscosity={0.28}
         className="map-container"
